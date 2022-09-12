@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import Keyboard from 'react-simple-keyboard';
 import 'react-simple-keyboard/build/css/index.css';
 import { createUseStyles } from 'react-jss';
+import { toast } from 'react-toastify';
 
 import db from '../assets/db.json';
 import Word from './Word';
-import { toast } from 'react-toastify';
+import Modal from './Modal';
+import { ReactComponent as Reload } from '../assets/reload.svg';
 
 const useStyle = createUseStyles({
     container: {
@@ -23,6 +25,7 @@ const useStyle = createUseStyles({
         justifyContent: 'space-between',
         alignItems: 'center',
         alignContent: 'center',
+        transition: '.5s',
     },
     words: {
         display: 'flex',
@@ -33,17 +36,45 @@ const useStyle = createUseStyles({
     keyboard: {
         width: '100%',
     },
+    open: {
+        transform: 'scale(0.9)',
+    },
+    reload: {
+        position: 'absolute',
+        width: '100vw',
+        height: '100vh',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%,-50%)',
+        background: '#1f1f1fd9',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+
+        '& svg *': {
+            fill: '#fff',
+        },
+
+        '& svg': {
+            padding: '20px',
+            background: '#452727',
+            borderRadius: '10px',
+            cursor: 'pointer',
+        },
+    },
 });
 
 const Game = () => {
     const classes = useStyle();
+    const tryNumber = 6;
+    const WordLength = 5;
 
     // init array for the result
     const initArray = () => {
         const array = [];
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < tryNumber; i++) {
             let row = [];
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < WordLength; i++) {
                 row.push({ letter: '', res: '' });
             }
             array.push(row);
@@ -61,8 +92,28 @@ const Game = () => {
     const [result, setResult] = useState(initArray());
     const [cursor, setCursor] = useState([0, 0]);
     const [word, setWord] = useState(genWord());
+    const [gameEnded, setGameEnded] = useState(false);
+
+    // modal
+    const closeModal = () => {
+        setModalStuff({ ...modalStuff, open: false });
+    };
+
+    const [modalStuff, setModalStuff] = useState({
+        open: false,
+        word,
+        win: false,
+        closeModal,
+    });
+
+    useEffect(() => {
+        setModalStuff({ ...modalStuff, word });
+    }, [word]);
 
     const handleKeyPress = (e) => {
+        // block keyboard if game is ended
+        if (gameEnded) return;
+
         switch (e) {
             case '{bksp}':
                 deleteCurrentLetter();
@@ -78,25 +129,43 @@ const Game = () => {
     };
 
     const updateResult = () => {
-        if (cursor[1] === 5) {
-            if (checkIfWordExists()) {
-                checkLetters();
-            } else toast.error("Ce mot n'existe pas");
+        // if all letters are typed
+        if (cursor[1] === WordLength) {
+            if (!wordExists()) {
+                return toast.error("Ce mot n'existe pas");
+            }
+
+            const win = checkLetters();
+
+            if (win) {
+                setModalStuff({ ...modalStuff, open: true, win: true });
+                setGameEnded(true);
+            }
+
+            // game over
+            if (cursor[0] === tryNumber - 1) {
+                setModalStuff({ ...modalStuff, open: true, win: false });
+                setGameEnded(true);
+            }
+            // set cursor to next step
+            setCursor([cursor[0] + 1, 0]);
         }
     };
 
     // check if word exists in db
-    const checkIfWordExists = () => {
+    const wordExists = () => {
         return db.words.includes(result[cursor[0]].map((e) => e.letter).join(''));
     };
 
     // check if letters are right
     const checkLetters = () => {
         let res = [...result];
+        let counter = 0;
         result[cursor[0]].forEach((e, i) => {
             // letter is true
             if (e.letter === word[i]) {
                 res[cursor[0]][i].res = 2;
+                counter++;
             }
             // letter is in the word at the wrong place
             else if (word.includes(e.letter)) {
@@ -107,14 +176,12 @@ const Game = () => {
         });
 
         setResult([...res]);
-        // set cursor to next step
-        if (cursor[0] !== 5) setCursor([cursor[0] + 1, 0]);
-        else toast.error('Jeu terminé');
+        return counter === WordLength;
     };
 
     const writeNewLetter = (e) => {
-        // if last letters to type
-        if (cursor[1] !== 5) {
+        // if all letters are not typed yet
+        if (cursor[1] !== WordLength) {
             // put letter to current cursor
             const res = [...result];
             res[cursor[0]][cursor[1]].letter = e;
@@ -137,9 +204,18 @@ const Game = () => {
         }
     };
 
+    // reset states
+    const restart = () => {
+        setGameEnded(false);
+        setWord(genWord());
+        setResult(initArray());
+        setCursor([0, 0]);
+    };
+
     return (
-        <div className={classes.container}>
-            <div className={classes.content}>
+        <div className={`${classes.container}`}>
+            <Modal opt={modalStuff} />
+            <div className={`${classes.content} ${modalStuff.open ? classes.open : ''}`}>
                 <div className={classes.words}>
                     {result.map((e, i) => (
                         <Word key={i} letters={e} />
@@ -158,6 +234,11 @@ const Game = () => {
                     />
                 </div>
             </div>
+            {gameEnded && (
+                <div className={classes.reload}>
+                    <Reload width="50" height="50" onClick={restart} />
+                </div>
+            )}
         </div>
     );
 };
