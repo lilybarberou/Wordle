@@ -3,28 +3,24 @@ import { createUseStyles } from 'react-jss';
 const useStyle = createUseStyles({
     word: {
         display: 'flex',
-        gap: '10px',
+        gap: '8px',
     },
     green: {
-        border: '4px solid green !important',
+        border: '3px solid green !important',
     },
-    yellow: { border: '4px solid yellow !important' },
-    darkgrey: { border: '4px solid darkgrey !important' },
+    yellow: { border: '3px solid yellow !important' },
+    darkgrey: { border: '3px solid darkgrey !important' },
     letter: (letters) => ({
         width: '60px',
         height: '60px',
-        border: '4px solid grey',
-        borderRadius: '10px',
+        border: '3px solid grey',
+        borderRadius: '8px',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         fontSize: '40px',
         color: 'white',
         textTransform: 'uppercase',
-
-        // '&:nth-child(1)': {
-        //     borderColor: getBorderColor(letters[0]),
-        // },
     }),
 });
 

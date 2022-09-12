@@ -45,7 +45,7 @@ const useStyle = createUseStyles({
         },
 
         '& span': {
-            fontSize: '35px',
+            fontSize: '36px',
             textTransform: 'uppercase',
             fontWeight: 'bold',
             flex: '1',
@@ -53,6 +53,7 @@ const useStyle = createUseStyles({
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
+            color: '#1c4995',
         },
     },
     open: {
@@ -72,13 +73,14 @@ const useStyle = createUseStyles({
 const Modal = ({ opt }) => {
     const classes = useStyle();
     const { open, word, win, closeModal } = opt;
+    console.log(open);
 
     return (
-        <>
-            {open && (
-                <div className={`${classes.container} ${open ? classes.open : ''}`}>
-                    <div className={`${classes.bg} bg`} onClick={closeModal}></div>
-                    <div className={`${classes.content} content`}>
+        <div className={`${classes.container} ${open ? classes.open : ''}`}>
+            <div className={`${classes.bg} bg`} onClick={closeModal}></div>
+            <div className={`${classes.content} content`}>
+                {open && (
+                    <>
                         <Close width="15" height="15" onClick={closeModal} />
                         {win ? (
                             <>
@@ -88,15 +90,15 @@ const Modal = ({ opt }) => {
                             </>
                         ) : (
                             <>
-                                <p>Game Over</p>
+                                <p>Perdu !</p>
                                 <p>Le mot était :</p>
                                 <span>{word}</span>
                             </>
                         )}
-                    </div>
-                </div>
-            )}
-        </>
+                    </>
+                )}
+            </div>
+        </div>
     );
 };
 

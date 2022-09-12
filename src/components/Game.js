@@ -30,11 +30,31 @@ const useStyle = createUseStyles({
     words: {
         display: 'flex',
         flexDirection: 'column',
-        gap: '10px',
+        gap: '8px',
         alignItems: 'center',
     },
     keyboard: {
         width: '100%',
+
+        '& .simple-keyboard.dark': {
+            backgroundColor: 'transparent',
+            borderRadius: '0',
+            borderBottomRightRadius: '5px',
+            borderBottomLeftRadius: '5px',
+            padding: '0',
+        },
+        '& .simple-keyboard.dark .hg-button': {
+            height: '50px',
+            padding: '20px',
+            border: 'none',
+        },
+        '& .simple-keyboard.dark .hg-button:active': {
+            background: '#1c4995',
+            color: 'white',
+        },
+        '& #root .simple-keyboard.dark + .simple-keyboard-preview': {
+            background: '#1c4995',
+        },
     },
     open: {
         transform: 'scale(0.9)',
@@ -231,6 +251,7 @@ const Game = () => {
                             '{enter}': 'Entrer',
                         }}
                         onKeyPress={handleKeyPress}
+                        theme="hg-theme-default dark"
                     />
                 </div>
             </div>
