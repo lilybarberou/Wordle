@@ -89,8 +89,7 @@ const Game = ({ type = 'default' }) => {
     useEffect(() => restart(), [type]);
 
     const classes = useStyle();
-    const tryNumber = 2;
-    // const WordLength = 5;
+    const tryNumber = 6;
 
     // init array for the result
     const initArray = (word) => {
