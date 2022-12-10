@@ -1,14 +1,13 @@
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
-import Game from './components/Game';
-import Navigation from './containers/Navigation';
+import Router from './components/Router';
 
 function App() {
     return (
-        <div className="App">
+        <div className='App'>
             <ToastContainer
-                position="top-right"
+                position='top-right'
                 autoClose={5000}
                 hideProgressBar={false}
                 newestOnTop={false}
@@ -17,10 +16,9 @@ function App() {
                 pauseOnFocusLoss
                 draggable
                 pauseOnHover
-                theme="dark"
+                theme='dark'
             />
-            <Navigation />
-            <Game />
+            <Router />
         </div>
     );
 }

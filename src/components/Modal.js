@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { createUseStyles } from 'react-jss';
 import { ReactComponent as Close } from '../assets/close.svg';
 
@@ -73,7 +74,6 @@ const useStyle = createUseStyles({
 const Modal = ({ opt }) => {
     const classes = useStyle();
     const { open, word, win, closeModal } = opt;
-    console.log(open);
 
     return (
         <div className={`${classes.container} ${open ? classes.open : ''}`}>
@@ -81,7 +81,7 @@ const Modal = ({ opt }) => {
             <div className={`${classes.content} content`}>
                 {open && (
                     <>
-                        <Close width="15" height="15" onClick={closeModal} />
+                        <Close width='15' height='15' onClick={closeModal} />
                         {win ? (
                             <>
                                 <h3>Félicitations !</h3>
@@ -102,4 +102,4 @@ const Modal = ({ opt }) => {
     );
 };
 
-export default Modal;
+export default memo(Modal);

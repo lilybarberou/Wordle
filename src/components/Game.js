@@ -34,7 +34,7 @@ const useStyle = createUseStyles({
         alignItems: 'center',
     },
     keyboard: {
-        width: '100%',
+        width: 'fit-content',
 
         '& .simple-keyboard.dark': {
             backgroundColor: 'transparent',
@@ -84,17 +84,20 @@ const useStyle = createUseStyles({
     },
 });
 
-const Game = () => {
+const Game = ({ type = 'default' }) => {
+    // reset when type changes
+    useEffect(() => restart(), [type]);
+
     const classes = useStyle();
-    const tryNumber = 6;
-    const WordLength = 5;
+    const tryNumber = 2;
+    // const WordLength = 5;
 
     // init array for the result
-    const initArray = () => {
+    const initArray = (word) => {
         const array = [];
         for (let i = 0; i < tryNumber; i++) {
             let row = [];
-            for (let i = 0; i < WordLength; i++) {
+            for (let i = 0; i < word.length; i++) {
                 row.push({ letter: '', res: '' });
             }
             array.push(row);
@@ -105,18 +108,18 @@ const Game = () => {
 
     // return a random word from db
     const genWord = () => {
-        const i = Math.floor(Math.random() * db.words.length);
-        return db.words[i];
+        const i = Math.floor(Math.random() * db[type].length);
+        return db[type][i];
     };
 
-    const [result, setResult] = useState(initArray());
-    const [cursor, setCursor] = useState([0, 0]);
     const [word, setWord] = useState(genWord());
+    const [result, setResult] = useState(initArray(word));
+    const [cursor, setCursor] = useState([0, 0]);
     const [gameEnded, setGameEnded] = useState(false);
 
     // modal
     const closeModal = () => {
-        setModalStuff({ ...modalStuff, open: false });
+        setModalStuff((prev) => ({ ...prev, open: false }));
     };
 
     const [modalStuff, setModalStuff] = useState({
@@ -127,7 +130,7 @@ const Game = () => {
     });
 
     useEffect(() => {
-        setModalStuff({ ...modalStuff, word });
+        setModalStuff((prev) => ({ ...prev, word }));
     }, [word]);
 
     const handleKeyPress = (e) => {
@@ -150,7 +153,7 @@ const Game = () => {
 
     const updateResult = () => {
         // if all letters are typed
-        if (cursor[1] === WordLength) {
+        if (cursor[1] === word.length) {
             if (!wordExists()) {
                 return toast.error("Ce mot n'existe pas");
             }
@@ -158,13 +161,13 @@ const Game = () => {
             const win = checkLetters();
 
             if (win) {
-                setModalStuff({ ...modalStuff, open: true, win: true });
+                setModalStuff((prev) => ({ ...prev, open: true, win: true }));
                 setGameEnded(true);
             }
 
             // game over
             if (cursor[0] === tryNumber - 1) {
-                setModalStuff({ ...modalStuff, open: true, win: false });
+                setModalStuff((prev) => ({ ...prev, open: true, win: false }));
                 setGameEnded(true);
             }
             // set cursor to next step
@@ -174,7 +177,7 @@ const Game = () => {
 
     // check if word exists in db
     const wordExists = () => {
-        return db.words.includes(result[cursor[0]].map((e) => e.letter).join(''));
+        return db[type].includes(result[cursor[0]].map((e) => e.letter).join(''));
     };
 
     // check if letters are right
@@ -196,12 +199,12 @@ const Game = () => {
         });
 
         setResult([...res]);
-        return counter === WordLength;
+        return counter === word.length;
     };
 
     const writeNewLetter = (e) => {
         // if all letters are not typed yet
-        if (cursor[1] !== WordLength) {
+        if (cursor[1] !== word.length) {
             // put letter to current cursor
             const res = [...result];
             res[cursor[0]][cursor[1]].letter = e;
@@ -227,8 +230,11 @@ const Game = () => {
     // reset states
     const restart = () => {
         setGameEnded(false);
-        setWord(genWord());
-        setResult(initArray());
+
+        const newWord = genWord();
+        setWord(newWord);
+        setResult(initArray(newWord));
+
         setCursor([0, 0]);
     };
 
@@ -247,17 +253,17 @@ const Game = () => {
                             default: ['a z e r t y u i o p', 'q s d f g h j k l m', '{bksp} w x c v b n {enter}'],
                         }}
                         display={{
-                            '{bksp}': 'Retour',
-                            '{enter}': 'Entrer',
+                            '{bksp}': '⌫',
+                            '{enter}': '↩',
                         }}
                         onKeyPress={handleKeyPress}
-                        theme="hg-theme-default dark"
+                        theme='hg-theme-default dark'
                     />
                 </div>
             </div>
             {gameEnded && (
                 <div className={classes.reload}>
-                    <Reload width="50" height="50" onClick={restart} />
+                    <Reload width='50' height='50' onClick={restart} />
                 </div>
             )}
         </div>
