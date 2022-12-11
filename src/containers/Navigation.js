@@ -43,39 +43,63 @@ const useStyle = createUseStyles({
     middle: {
         display: 'flex',
         gap: 20,
-
-        '& a': {
-            color: '#fff',
-            textDecoration: 'none',
-            textTransform: 'uppercase',
-            fontSize: 15,
-            position: 'relative',
-
-            '&::after': {
-                position: 'absolute',
-                content: "''",
-                width: '100%',
-                height: 4,
-                background: '#11113f',
-                left: 0,
-                bottom: '-3px',
-                transform: 'scale(0)',
-                transition: '.3s',
-            },
-            '&.active': {
-                '&::after': {
-                    transform: 'scale(1)',
-                },
-            },
-        },
     },
     right: {
         width: 150,
+    },
+    submenu: {
+        display: 'flex',
+        position: 'relative',
+        color: '#fff',
+        textTransform: 'uppercase',
+        fontSize: 15,
+
+        '& > span': {
+            pointerEvents: 'none',
+        },
+        '&:hover > div': {
+            display: 'flex',
+        },
+        '& > div': {
+            position: 'absolute',
+            flexDirection: 'column',
+            top: '100%',
+            gap: 10,
+            left: 0,
+            display: 'none',
+            background: '#11113f',
+            padding: 10,
+            borderRadius: 5,
+            minWidth: '100%',
+            boxSizing: 'border-box',
+
+            '& > a': {
+                whiteSpace: 'nowrap',
+                fontSize: 14,
+                color: '#fff',
+                textDecoration: 'none',
+            },
+        },
     },
 });
 
 const Navigation = () => {
     const classes = useStyle();
+
+    const SubMenu = ({ title, base = '', nb = [] }) => {
+        return (
+            <div className={classes.submenu}>
+                <span>{title}</span>
+                <div>
+                    {nb.map((n) => (
+                        <NavLink key={n} to={`${base}/${n}`}>
+                            {n} lettres
+                        </NavLink>
+                    ))}
+                </div>
+            </div>
+        );
+    };
 
     return (
         <div className={classes.container}>
@@ -91,11 +115,9 @@ const Navigation = () => {
                 </h1>
             </div>
             <div className={classes.middle}>
-                <NavLink activeclassname='active' to='/'>
-                    Partie normale
-                </NavLink>
-                <NavLink to='/anime'>Anime</NavLink>
-                <NavLink to='/jeux-videos'>Jeux vidéos</NavLink>
+                <SubMenu title='Partie normale' nb={[4, 5, 6, 7]} />
+                <SubMenu title='Anime' base='/anime' nb={[4, 5, 6, 7]} />
+                <SubMenu title='Jeux vidéos' base='/jeux-videos' nb={[4, 5, 6, 7]} />
             </div>
             <div className={classes.right}></div>
         </div>

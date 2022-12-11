@@ -5,8 +5,9 @@ import Game from './Game';
 const Router = () => {
     const routes = [
         { path: '/', element: <Game /> },
-        { path: '/anime', element: <Game type='anime' /> },
-        { path: '/jeux-videos', element: <Game type='jv' /> },
+        { path: '/:n', element: <Game /> },
+        { path: '/anime/:n', element: <Game type='anime' /> },
+        { path: '/jeux-videos/:n', element: <Game type='jv' /> },
     ];
 
     return (
