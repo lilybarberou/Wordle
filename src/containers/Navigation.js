@@ -107,9 +107,9 @@ const Navigation = () => {
     const { pathname } = useLocation();
 
     const SubMenu = ({ title, base = '', nb = [] }) => {
-        const urls = nb.map((n) => `/${n}`);
-        urls.push(base);
-        const isActive = urls.includes(pathname);
+        const urls = (base && [base]) || nb.map((n) => `/${n}`);
+        const isHomePage = !base && pathname === '/';
+        const isActive = isHomePage ? true : urls.includes(pathname);
 
         return (
             <div className={classes.submenu}>
