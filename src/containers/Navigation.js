@@ -107,7 +107,8 @@ const Navigation = () => {
     const { pathname } = useLocation();
 
     const SubMenu = ({ title, base = '', nb = [] }) => {
-        const urls = base || nb.map((n) => `/${n}`);
+        const urls = nb.map((n) => `/${n}`);
+        urls.push(base);
         const isActive = urls.includes(pathname);
 
         return (
