@@ -1,5 +1,5 @@
 import { createUseStyles } from 'react-jss';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 
 const useStyle = createUseStyles({
     container: {
@@ -54,8 +54,27 @@ const useStyle = createUseStyles({
         textTransform: 'uppercase',
         fontSize: 15,
 
-        '& > span': {
+        '& > a': {
             pointerEvents: 'none',
+            textDecoration: 'none',
+            color: '#fff',
+            position: 'relative',
+
+            '&.active::after': {
+                transform: 'scale(1)',
+            },
+            '&::after': {
+                transform: 'scale(0)',
+                transition: '.3s',
+                position: 'absolute',
+                borderRadius: 30,
+                bottom: -4,
+                left: 0,
+                width: '100%',
+                content: "''",
+                height: 4,
+                background: '#11113f',
+            },
         },
         '&:hover > div': {
             display: 'flex',
@@ -85,11 +104,17 @@ const useStyle = createUseStyles({
 
 const Navigation = () => {
     const classes = useStyle();
+    const { pathname } = useLocation();
 
     const SubMenu = ({ title, base = '', nb = [] }) => {
+        const urls = base || nb.map((n) => `/${n}`);
+        const isActive = urls.includes(pathname);
+
         return (
             <div className={classes.submenu}>
-                <span>{title}</span>
+                <NavLink className={isActive ? 'active' : ''} to={base}>
+                    {title}
+                </NavLink>
                 <div>
                     {nb.map((n) => (
                         <NavLink key={n} to={`${base}/${n}`}>
